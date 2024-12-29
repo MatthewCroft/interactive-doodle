@@ -33,17 +33,16 @@ function drawGuestLine(draw) {
 
     drawContext.moveTo(draw.previousX, draw.previousY);
     drawContext.lineTo(draw.currentX, draw.currentY);
-    drawContext.strokeStyle = "black";
+    drawContext.strokeStyle = draw.currentColor;
     drawContext.stroke();
 
     nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
 
     nameContext.font = "16px Arial";
-    nameContext.fillStyle = "black";
+    nameContext.fillStyle = draw.currentColor;
     nameContext.fillText(draw.name, draw.currentX + 10, draw.currentY - 10);
 }
 
-//todo: add z index, figure out how to keep track
 function createGuestContext(draw) {
     let $drawCanvas = $("<canvas></canvas>");
 

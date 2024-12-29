@@ -21,7 +21,7 @@ let lastY = 0;
 
 const canvas = $('#whiteboard')[0];
 const ctx = canvas.getContext('2d');
-let currentColor = $('#color-picker').val();
+let currentColor = "black";
 
 const nameCanvas = $('#namewhiteboard')[0];
 const nameContext = nameCanvas.getContext('2d');
@@ -33,7 +33,6 @@ function resizeCanvas() {
     nameCanvas.height = $(window).height();
 }
 
-// Initialize canvas size on page load
 function beginDraw(event) {
     isDrawing = true;
     lastX = event.offsetX;
@@ -58,6 +57,7 @@ function drawLine(event) {
     nameContext.fillStyle = currentColor;
     nameContext.fillText(localStorage.getItem('userName'), currentX + 10, currentY - 10);
 
+    //todo: pass current color correctly
     c.publish({
         destination: "/app/draw",
         body: JSON.stringify({

@@ -5,7 +5,7 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     console.log('Connected: ' + frame);
     stompClient.subscribe('/topic/chat', (chat) => {
-        appendMessage(chat.body);
+        appendMessage(JSON.parse(chat.body));
     })
 }
 
@@ -21,8 +21,7 @@ stompClient.onStompError = (error) => {
 function appendMessage(chat) {
     $('#chat-box').append(`
         <div class="message-box">
-            <p class="sender">You:</p>
-            <p class="message-content">${chat}</p>
+            <p class="message-content" style="color: ${chat.color};">${chat.name}: ${chat.message}</p>
         </div>
     `);
 }
@@ -30,13 +29,33 @@ function appendMessage(chat) {
 function sendMessage() {
     stompClient.publish({
         destination: "/app/chat",
-        body: JSON.stringify({'message': $('#message-input').val()})
+        body: JSON.stringify({
+            'color': currentColor,
+            'message': $('#message-input').val(),
+            'name': localStorage.getItem('userName')
+        })
     });
 
     $('#message-input').val("");
 }
 
+function enterSend(event) {
+    if (event.which === 13) {
+        sendMessage();
+    }
+}
+
+function toggleChat() {
+    $('#chat-container').toggle();
+
+    if ($("#chat-container").is(":visible")) {
+        $("#message-input").focus();
+    }
+}
+
 $(function () {
     stompClient.activate();
     $("#send-btn").click(() => sendMessage());
+    $("#message-input").keypress(enterSend);
+    $('#toggle-chat-btn').on('click', toggleChat);
 })

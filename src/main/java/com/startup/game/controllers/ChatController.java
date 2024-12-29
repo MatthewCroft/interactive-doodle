@@ -9,12 +9,12 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     @MessageMapping("/chat")
-    public String chatIn(Message message) {
-       return chatOut(message.getMessage());
+    @SendTo("/topic/chat")
+    public Message chatIn(Message message) {
+       return chatOut(message);
     }
 
-    @SendTo("/topic/chat")
-    public String chatOut(String message) {
+    public Message chatOut(Message message) {
        return message;
     }
 }
