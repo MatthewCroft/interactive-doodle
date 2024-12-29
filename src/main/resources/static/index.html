@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="/user.js"></script>
     <style>
         /* Full-page whiteboard */
         body, html {
@@ -129,7 +130,8 @@
                 <h5 class="modal-title" id="nameModalLabel">What's your name?</h5>
             </div>
             <div class="modal-body">
-                <input type="text" id="user-name" class="form-control" placeholder="Enter your name">
+                <input type="text" id="user-name" autocomplete="off" class="form-control" placeholder="Enter your name">
+                <div class="invalid-feedback"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="submit-name" class="btn btn-primary">Submit</button>
@@ -193,15 +195,32 @@
         } else {
             $('#autoCloseModal').modal('show');
             const name = localStorage.getItem('userName');
-            $('#modalBody').append(`<p>${name}</p>`)
 
+            $('#modalBody').append(`<p>${name}</p>`)
             setTimeout(function() {
                 $('#autoCloseModal').modal('hide');
             }, 3000);
-    }
+        }
 
         $("#submit-name").on('click', function() {
-            localStorage.setItem('userName', $("#user-name").val())
+            const name = $("#user-name").val().trim();
+            $('#user-name').removeClass('is-invalid is-valid');
+            $('.invalid-feedback').text('')
+
+            if (name === "") {
+               $('#user-name').addClass('is-invalid');
+               $('.invalid-feedback').text('Username must not be empty')
+                return;
+            }
+
+            if (users.includes(name.toLowerCase())) {
+                $('#user-name').addClass('is-invalid');
+                $('.invalid-feedback').text('Username already exist');
+                return;
+            }
+
+            localStorage.setItem('userName', name);
+            addUser(name);
             $("#nameModal").modal('hide');
             $("#user-name").val("");
         })
