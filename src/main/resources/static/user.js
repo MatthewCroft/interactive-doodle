@@ -1,10 +1,9 @@
 const userstomp= new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com'
+    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
 });
 
 userstomp.onConnect = (frame) => {
     console.log('Connected: ' + frame);
-    console.log(localStorage.getItem('userName'));
     if (localStorage.getItem('userName')) {
         addUser(localStorage.getItem('userName'));
     } else {

@@ -1,5 +1,5 @@
 const stomp= new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com'
+    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
 });
 
 stomp.onConnect = (frame) => {
@@ -9,7 +9,6 @@ stomp.onConnect = (frame) => {
     });
 
     stomp.subscribe('/topic/clear', () => {
-        console.log("here");
         clearGuests();
     })
 }
