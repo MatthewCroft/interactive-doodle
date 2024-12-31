@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>com.startup</groupId>
-    <artifactId>Game</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Game</name>
+    <artifactId>Interactive-Doodle</artifactId>
+    <version>0.0.1</version>
+    <name>Interactive-Doodle</name>
     <description>Game</description>
 
     <!-- Add this to specify the packaging type as JAR -->
