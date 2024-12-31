@@ -4,6 +4,7 @@ const userstomp= new StompJs.Client({
 
 userstomp.onConnect = (frame) => {
     console.log('Connected: ' + frame);
+    console.log(localStorage.getItem('userName'));
     if (localStorage.getItem('userName')) {
         addUser(localStorage.getItem('userName'));
     } else {
@@ -35,11 +36,9 @@ userstomp.onStompError = (error) => {
 let users = []
 
 function addUser(name) {
-    // todo: print message saying the username already exists
     if (users.includes(name.toLowerCase())) {
         return;
     }
-    console.log("here");
 
     userstomp.publish({
         destination: "/app/users",

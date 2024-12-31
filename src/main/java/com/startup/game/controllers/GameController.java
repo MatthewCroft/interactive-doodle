@@ -16,4 +16,10 @@ public class GameController {
     public GuestDrawLine sendDraw(GuestDrawLine guestDrawLine) {
         return guestDrawLine;
     }
+
+    @MessageMapping("/clear")
+    @SendTo("/topic/clear")
+    public String clearCanvas() {
+        return "Clear";
+    }
 }

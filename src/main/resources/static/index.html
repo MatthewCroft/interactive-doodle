@@ -120,6 +120,20 @@
         #autoCloseModal {
             z-index: 9999;
         }
+
+        #upper-left-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 9998;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +161,6 @@
                 <h5 class="modal-title" id="exampleModalLabel">Welcome back</h5>
             </div>
             <div class="modal-body" id="modalBody">
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -161,6 +174,7 @@
     <canvas id="whiteboard"></canvas>
     <canvas id="namewhiteboard"></canvas>
 </div>
+
 <script src="/whiteboard.js"></script>
 <script src="/guestswhiteboard.js"></script>
 
@@ -180,6 +194,9 @@
 <script src="/chat.js"></script>
 <!-- Button to toggle the chat box visibility -->
 <button class="chat-toggle-btn" id="toggle-chat-btn">Chat</button>
+
+<!-- Upper-left button -->
+<button class="upper-left-button" id="upper-left-button">Reset Board</button>
 
 <!-- Color Picker Container -->
 <div id="color-picker-container">

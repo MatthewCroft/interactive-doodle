@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mocha Test</title>
+
+  <!-- Mocha CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.css" />
+
+  <!-- Sinon for mocking -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/11.1.2/sinon.min.js"></script>
+
+  <!-- Chai for assertions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js"></script>
+
+  <!-- Mocha JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.min.js"></script>
+</head>
+<body>
+<div id="mocha"></div> <!-- Mocha test output will be shown here -->
+<canvas style="display: none" id="whiteboard"></canvas>
+<canvas style="display: none" id="namewhiteboard"></canvas>
+
+<!-- Your script to test -->
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../whiteboard.js"></script>
+<script>
+  mocha.setup('bdd');
+  const { expect } = chai;
+
+  describe('whiteboard tests', () => {
+    let stompStub, canvasStub, nameContextStub;
+
+    beforeEach(() => {
+      stompStub = sinon.stub(StompJs, 'Client').returns({
+        publish: sinon.stub(),
+        activate: sinon.stub()
+      });
+
+      // Mock the canvas element and its methods
+      canvasStub = sinon.stub($('#whiteboard')[0], 'getContext').returns({
+        beginPath: sinon.stub(),
+        moveTo: sinon.stub(),
+        lineTo: sinon.stub(),
+        stroke: sinon.stub(),
+        clearRect: sinon.stub(),
+        fillText: sinon.stub(),
+        font: '',
+        fillStyle: ''
+      });
+
+      nameContextStub = sinon.stub($('#namewhiteboard')[0], 'getContext').returns({
+        clearRect: sinon.stub(),
+        fillText: sinon.stub(),
+        font: '',
+        fillStyle: ''
+      });
+
+      c.publish = stompStub().publish
+      c.activate = stompStub().activate;
+    });
+
+
+    afterEach(() => {
+      sinon.restore();
+    })
+
+    it('should pass the draw correctly to other users', () => {
+      isDrawing = true;
+      lastX = 1;
+      lastY = 1;
+      localStorage.setItem('userName', 'user1');
+      const args = {
+        'offsetX': 1,
+        'offsetY': 1
+      }
+
+      drawLine(args);
+
+      sinon.assert.calledOnce(c.publish);
+      const expectedArgs = {
+          destination: '/app/draw',
+          body: JSON.stringify({
+            name: localStorage.getItem('userName'),
+            currentColor: currentColor,
+            currentX: 1,
+            currentY: 1,
+            previousX: 1,
+            previousY: 1
+        })
+      }
+      sinon.assert.calledWith(c.publish, sinon.match(expectedArgs));
+    })
+
+    mocha.run();
+  })
+</script>
+</body>
+</html>

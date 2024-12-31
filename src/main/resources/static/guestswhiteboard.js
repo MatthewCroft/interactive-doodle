@@ -6,6 +6,11 @@ stomp.onConnect = (frame) => {
     console.log('Connected: ' + frame);
     stomp.subscribe('/topic/draw', (draw) => {
         drawGuestLine(JSON.parse(draw.body));
+    });
+
+    stomp.subscribe('/topic/clear', () => {
+        console.log("here");
+        clearGuests();
     })
 }
 
@@ -64,6 +69,16 @@ function createGuestContext(draw) {
 
     canvasMap.set(`${draw.name}-name`, nameContext);
     canvasMap.set(`${draw.name}-draw`, drawContext);
+}
+
+function clearGuests() {
+    for (const canvas of canvasMap.keys()) {
+        let element = canvasMap.get(canvas);
+        element.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
+    }
+
+   nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
+   ctx.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
 }
 
 $(document).ready(function() {

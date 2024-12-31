@@ -57,7 +57,6 @@ function drawLine(event) {
     nameContext.fillStyle = currentColor;
     nameContext.fillText(localStorage.getItem('userName'), currentX + 10, currentY - 10);
 
-    //todo: pass current color correctly
     c.publish({
         destination: "/app/draw",
         body: JSON.stringify({
@@ -82,6 +81,15 @@ function updateColor() {
     currentColor = $("#color-picker").val();
 }
 
+function resetBoard() {
+    ctx.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
+    nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
+
+    c.publish({
+        destination: '/app/clear'
+    });
+}
+
 $(document).ready(function() {
     c.activate();
     resizeCanvas();
@@ -90,5 +98,6 @@ $(document).ready(function() {
     $("#whiteboard").on("mouseup", drawStop);
     $("#whiteboard").on("mouseout", drawStop);
     $("#color-picker").on("input", updateColor);
+    $('#upper-left-button').on('click', resetBoard);
 })
 
