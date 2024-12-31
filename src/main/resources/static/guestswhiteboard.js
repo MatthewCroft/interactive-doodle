@@ -1,5 +1,5 @@
 const stomp= new StompJs.Client({
-    brokerURL: 'ws://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com'
+    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com'
 });
 
 stomp.onConnect = (frame) => {
