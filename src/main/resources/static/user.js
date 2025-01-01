@@ -1,23 +1,12 @@
 const userstomp= new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
+    brokerURL: 'ws://localhost:8080/game-websocket'
 });
 
 userstomp.onConnect = (frame) => {
     console.log('Connected: ' + frame);
-    if (localStorage.getItem('userName')) {
-        addUser(localStorage.getItem('userName'));
-    } else {
-        userstomp.publish({
-            destination: "/app/current/users"
-        });
-    }
+    getUsers(localStorage.getItem('userName'));
 
     userstomp.subscribe("/topic/users", (users) => {
-        console.log(users.body);
-        updateUsers(JSON.parse(users.body));
-    })
-
-    userstomp.subscribe("/topic/current/users", (users) => {
         console.log(users.body);
         updateUsers(JSON.parse(users.body));
     })
@@ -34,11 +23,7 @@ userstomp.onStompError = (error) => {
 
 let users = []
 
-function addUser(name) {
-    if (users.includes(name.toLowerCase())) {
-        return;
-    }
-
+function getUsers(name) {
     userstomp.publish({
         destination: "/app/users",
         body: JSON.stringify({

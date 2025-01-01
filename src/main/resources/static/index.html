@@ -174,9 +174,9 @@
     <canvas id="whiteboard"></canvas>
     <canvas id="namewhiteboard"></canvas>
 </div>
-
-<script src="/whiteboard.js"></script>
-<script src="/guestswhiteboard.js"></script>
+<script src="./whiteboard-utils.js"></script>
+<script src="./user-whiteboard-actions.js"></script>
+<script src="./guest-whiteboard-actions.js"></script>
 
 <!-- Chat Box Container -->
 <div class="chat-container" id="chat-container">
@@ -237,7 +237,7 @@
             }
 
             localStorage.setItem('userName', name);
-            addUser(name);
+            getUsers(name);
             $("#nameModal").modal('hide');
             $("#user-name").val("");
         })

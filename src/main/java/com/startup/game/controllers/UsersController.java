@@ -15,17 +15,12 @@ public class UsersController {
 
     @MessageMapping("/users")
     @SendTo("/topic/users")
-    public Users addUser(User user) {
-       if (users.contains(user.getUserName().toLowerCase())) return new Users(users);
+    public Users getUsers(User user) {
+       if (user.getUserName() == null || users.contains(user.getUserName().toLowerCase())) return new Users(users);
 
        users.add(user.getUserName().toLowerCase());
 
        return new Users(users);
     }
 
-    @MessageMapping("/current/users")
-    @SendTo("/topic/current/users")
-    public Users getUsers() {
-        return new Users(users);
-    }
 }

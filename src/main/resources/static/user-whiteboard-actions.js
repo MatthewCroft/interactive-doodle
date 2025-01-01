@@ -1,9 +1,13 @@
 const c = new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
+    brokerURL: 'ws://localhost:8080/game-websocket'
 });
 
 c.onConnect = (frame) => {
     console.log('Connected: ' + frame);
+    c.subscribe('/topic/clear', () => {
+        clearGuests();
+        clearUserBoard();
+    })
 }
 
 c.onWebSocketError = (error) => {
@@ -44,18 +48,8 @@ function drawLine(event) {
     const currentX = event.offsetX;
     const currentY = event.offsetY;
 
-    ctx.beginPath();
-
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(currentX, currentY);
-    ctx.strokeStyle = currentColor;
-    ctx.stroke();
-
-    nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
-
-    nameContext.font = "16px Arial";
-    nameContext.fillStyle = currentColor;
-    nameContext.fillText(localStorage.getItem('userName'), currentX + 10, currentY - 10);
+    createLine(ctx, currentX, currentY, lastX, lastY, currentColor);
+    updateNameContext(nameContext, currentColor, currentX, currentY, localStorage.getItem('userName'));
 
     c.publish({
         destination: "/app/draw",
@@ -82,12 +76,14 @@ function updateColor() {
 }
 
 function resetBoard() {
-    ctx.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
-    nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
-
     c.publish({
         destination: '/app/clear'
     });
+}
+
+function clearUserBoard() {
+    ctx.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
+    nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
 }
 
 $(document).ready(function() {

@@ -1,5 +1,5 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
+    brokerURL: 'ws://localhost:8080/game-websocket'
 });
 
 stompClient.onConnect = (frame) => {

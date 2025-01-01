@@ -1,16 +1,13 @@
 const stomp= new StompJs.Client({
-    brokerURL: 'wss://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/game-websocket'
+    brokerURL: 'ws://localhost:8080/game-websocket'
 });
 
 stomp.onConnect = (frame) => {
     console.log('Connected: ' + frame);
     stomp.subscribe('/topic/draw', (draw) => {
+        console.log(draw.body);
         drawGuestLine(JSON.parse(draw.body));
     });
-
-    stomp.subscribe('/topic/clear', () => {
-        clearGuests();
-    })
 }
 
 stomp.onWebSocketError = (error) => {
@@ -33,18 +30,9 @@ function drawGuestLine(draw) {
     let drawContext = canvasMap.get(`${draw.name}-draw`);
     let nameContext = canvasMap.get(`${draw.name}-name`);
 
-    drawContext.beginPath();
-
-    drawContext.moveTo(draw.previousX, draw.previousY);
-    drawContext.lineTo(draw.currentX, draw.currentY);
-    drawContext.strokeStyle = draw.currentColor;
-    drawContext.stroke();
-
-    nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
-
-    nameContext.font = "16px Arial";
-    nameContext.fillStyle = draw.currentColor;
-    nameContext.fillText(draw.name, draw.currentX + 10, draw.currentY - 10);
+    createLine(drawContext, draw.currentX, draw.currentY,
+        draw.previousX, draw.previousY, draw.currentColor);
+    updateNameContext(nameContext, draw.currentColor, draw.currentX, draw.currentY, draw.name);
 }
 
 function createGuestContext(draw) {
@@ -75,9 +63,6 @@ function clearGuests() {
         let element = canvasMap.get(canvas);
         element.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
     }
-
-   nameContext.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
-   ctx.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
 }
 
 $(document).ready(function() {
