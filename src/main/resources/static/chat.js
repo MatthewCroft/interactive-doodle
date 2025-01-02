@@ -1,23 +1,3 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/game-websocket'
-});
-
-stompClient.onConnect = (frame) => {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/chat', (chat) => {
-        appendMessage(JSON.parse(chat.body));
-    })
-}
-
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-}
-
-stompClient.onStompError = (error) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-}
-
 function appendMessage(chat) {
     $('#chat-box').append(`
         <div class="message-box">
@@ -26,8 +6,10 @@ function appendMessage(chat) {
     `);
 }
 
-function sendMessage() {
-    stompClient.publish({
+async function sendMessage() {
+    let client = await getStompClient();
+
+    client.publish({
         destination: "/app/chat",
         body: JSON.stringify({
             'color': currentColor,
@@ -39,9 +21,9 @@ function sendMessage() {
     $('#message-input').val("");
 }
 
-function enterSend(event) {
+async function enterSend(event) {
     if (event.which === 13) {
-        sendMessage();
+        await sendMessage();
     }
 }
 
@@ -54,7 +36,6 @@ function toggleChat() {
 }
 
 $(function () {
-    stompClient.activate();
     $("#send-btn").click(() => sendMessage());
     $("#message-input").keypress(enterSend);
     $('#toggle-chat-btn').on('click', toggleChat);

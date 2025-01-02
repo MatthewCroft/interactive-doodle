@@ -1,24 +1,3 @@
-const stomp= new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/game-websocket'
-});
-
-stomp.onConnect = (frame) => {
-    console.log('Connected: ' + frame);
-    stomp.subscribe('/topic/draw', (draw) => {
-        console.log(draw.body);
-        drawGuestLine(JSON.parse(draw.body));
-    });
-}
-
-stomp.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-}
-
-stomp.onStompError = (error) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-}
-
 const canvasMap = new Map();
 
 function drawGuestLine(draw) {
@@ -64,7 +43,3 @@ function clearGuests() {
         element.clearRect(0, 0, nameCanvas.width, nameCanvas.height);
     }
 }
-
-$(document).ready(function() {
-    stomp.activate();
-})

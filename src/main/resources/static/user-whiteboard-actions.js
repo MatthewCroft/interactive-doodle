@@ -1,24 +1,3 @@
-const c = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/game-websocket'
-});
-
-c.onConnect = (frame) => {
-    console.log('Connected: ' + frame);
-    c.subscribe('/topic/clear', () => {
-        clearGuests();
-        clearUserBoard();
-    })
-}
-
-c.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-}
-
-c.onStompError = (error) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-}
-
 let isDrawing  = false;
 let lastX = 0;
 let lastY = 0;
@@ -43,7 +22,7 @@ function beginDraw(event) {
     lastY = event.offsetY;
 }
 
-function drawLine(event) {
+async function drawLine(event) {
     if (!isDrawing) return;
     const currentX = event.offsetX;
     const currentY = event.offsetY;
@@ -51,7 +30,8 @@ function drawLine(event) {
     createLine(ctx, currentX, currentY, lastX, lastY, currentColor);
     updateNameContext(nameContext, currentColor, currentX, currentY, localStorage.getItem('userName'));
 
-    c.publish({
+    let client = await getStompClient();
+    client.publish({
         destination: "/app/draw",
         body: JSON.stringify({
             'name': localStorage.getItem('userName'),
@@ -75,8 +55,9 @@ function updateColor() {
     currentColor = $("#color-picker").val();
 }
 
-function resetBoard() {
-    c.publish({
+async function resetBoard() {
+    let client = await getStompClient();
+    client.publish({
         destination: '/app/clear'
     });
 }
@@ -87,7 +68,6 @@ function clearUserBoard() {
 }
 
 $(document).ready(function() {
-    c.activate();
     resizeCanvas();
     $("#whiteboard").on("mousemove", drawLine);
     $("#whiteboard").on("mousedown",beginDraw);
