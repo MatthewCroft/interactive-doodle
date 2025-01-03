@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocha Test</title>
+
+    <!-- Mocha CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.css" />
+
+    <!-- Sinon for mocking -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/11.1.2/sinon.min.js"></script>
+
+    <!-- Chai for assertions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js"></script>
+
+    <!-- Mocha JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.min.js"></script>
+</head>
+<body>
+<input style="display: none" id="message-input" type="text"/>
+<div id="mocha"></div> <!-- Mocha test output will be shown here -->
+
+<!-- Your script to test -->
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../stomp-client.js"></script>
+<script src="../chat.js"></script>
+
+<!-- Mocha Tests -->
+<script>
+    mocha.setup('bdd');
+    const { expect } = chai;
+
+    describe('Chat Tests', () => {
+        let stompClientMock;
+
+        beforeEach(() => {
+            stompClientMock = {
+                publish: sinon.stub(),
+                activate: sinon.stub()
+            }
+            sinon.stub(window, 'getStompClient')
+                .returns(Promise.resolve(stompClientMock));
+        })
+
+        afterEach(() => {
+            sinon.restore();
+        })
+
+        it('should send user message to the server', async () => {
+            currentColor = "black";
+            $('#message-input').val("Hello World!");
+            localStorage.setItem('userName', 'matt');
+
+            await sendMessage();
+
+            const expectedArgs = {
+                destination: '/app/chat',
+                body: JSON.stringify({
+                    'color': currentColor,
+                    'message': 'Hello World!',
+                    'name': localStorage.getItem('userName')
+                })
+            }
+
+            sinon.assert.calledOnce(stompClientMock.publish);
+            sinon.assert.calledWith(stompClientMock.publish, sinon.match(expectedArgs));
+        });
+    });
+
+    // Run the tests
+    mocha.run();
+</script>
+</body>
+</html>

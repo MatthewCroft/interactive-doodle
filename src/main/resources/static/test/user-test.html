@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mocha Test</title>
+
+  <!-- Mocha CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.css" />
+
+  <!-- Sinon for mocking -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/11.1.2/sinon.min.js"></script>
+
+  <!-- Chai for assertions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js"></script>
+
+  <!-- Mocha JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.0.0/mocha.min.js"></script>
+</head>
+<body>
+<div id="mocha"></div> <!-- Mocha test output will be shown here -->
+
+<!-- Your script to test -->
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../stomp-client.js"></script>
+<script src="../user.js"></script>
+
+<!-- Mocha Tests -->
+<script>
+  mocha.setup('bdd');
+  const { expect } = chai;
+
+  describe('User Tests', () => {
+    let stompClientMock;
+
+    beforeEach(() => {
+        stompClientMock = {
+          publish: sinon.stub(),
+          activate: sinon.stub()
+        }
+        sinon.stub(window, 'getStompClient')
+                .returns(Promise.resolve(stompClientMock));
+    })
+
+    afterEach(() => {
+      sinon.restore();
+    })
+
+    it('should make a call to get updated user list', async () => {
+      const newUser = 'user3';
+
+      await getUsers(newUser);
+
+      const expectedArgs = {
+        destination: '/app/users',
+        body: JSON.stringify({
+          userName: 'user3'
+        })
+      }
+      sinon.assert.calledOnce(stompClientMock.publish);
+      sinon.assert.calledWith(stompClientMock.publish, sinon.match(expectedArgs));
+    });
+  });
+
+  // Run the tests
+  mocha.run();
+</script>
+</body>
+</html>

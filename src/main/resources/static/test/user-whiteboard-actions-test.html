@@ -25,49 +25,32 @@
 <!-- Your script to test -->
 <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../whiteboard.js"></script>
+<script src="../stomp-client.js"></script>
+<script src="../whiteboard-utils.js"></script>
+<script src="../user-whiteboard-actions.js"></script>
 <script>
   mocha.setup('bdd');
-  const { expect } = chai;
 
-  describe('whiteboard tests', () => {
-    let stompStub, canvasStub, nameContextStub;
+  describe('User whiteboard actions test', () => {
+    let stompMock, createLineMock, updateNameContextMock;
 
     beforeEach(() => {
-      stompStub = sinon.stub(StompJs, 'Client').returns({
+      stompMock = {
         publish: sinon.stub(),
-        activate: sinon.stub()
-      });
+        activate: sinon.spy()
+      };
 
-      // Mock the canvas element and its methods
-      canvasStub = sinon.stub($('#whiteboard')[0], 'getContext').returns({
-        beginPath: sinon.stub(),
-        moveTo: sinon.stub(),
-        lineTo: sinon.stub(),
-        stroke: sinon.stub(),
-        clearRect: sinon.stub(),
-        fillText: sinon.stub(),
-        font: '',
-        fillStyle: ''
-      });
-
-      nameContextStub = sinon.stub($('#namewhiteboard')[0], 'getContext').returns({
-        clearRect: sinon.stub(),
-        fillText: sinon.stub(),
-        font: '',
-        fillStyle: ''
-      });
-
-      c.publish = stompStub().publish
-      c.activate = stompStub().activate;
+      sinon.stub(window, 'getStompClient')
+              .returns(Promise.resolve(stompMock));
+      createLineMock = sinon.stub(window, 'createLine')
+      updateNameContextMock = sinon.stub(window, 'updateNameContext');
     });
-
 
     afterEach(() => {
       sinon.restore();
     })
 
-    it('should pass the draw correctly to other users', () => {
+    it('should pass the draw correctly to other users when isDrawing is true', async () => {
       isDrawing = true;
       lastX = 1;
       lastY = 1;
@@ -77,9 +60,12 @@
         'offsetY': 1
       }
 
-      drawLine(args);
+      await drawLine(args);
 
-      sinon.assert.calledOnce(c.publish);
+      sinon.assert.calledOnce(stompMock.publish);
+      sinon.assert.calledOnce(createLineMock);
+      sinon.assert.calledOnce(updateNameContextMock);
+
       const expectedArgs = {
           destination: '/app/draw',
           body: JSON.stringify({
@@ -91,7 +77,28 @@
             previousY: 1
         })
       }
-      sinon.assert.calledWith(c.publish, sinon.match(expectedArgs));
+      sinon.assert.calledWith(stompMock.publish, sinon.match(expectedArgs));
+    })
+
+    it('should not pass the draw to other users when isDrawing is false', async () => {
+      isDrawing = false;
+      const args = {
+        'offsetX': 1,
+        'offsetY': 1
+      }
+
+      await drawLine(args);
+
+      sinon.assert.notCalled(stompMock.publish);
+    })
+
+    it('should send a resetMessage when user resets the board', async () => {
+      await resetBoard();
+      sinon.assert.calledOnce(stompMock.publish);
+      const expectedArgs = {
+        destination: "/app/clear"
+      }
+      sinon.assert.calledWith(stompMock.publish, sinon.match(expectedArgs));
     })
 
     mocha.run();
