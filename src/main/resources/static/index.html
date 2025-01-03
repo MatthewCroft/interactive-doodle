@@ -212,6 +212,7 @@
 
         if (!localStorage.getItem('userName')) {
             $("#nameModal").modal('show');
+            await getUsers(null);
         } else {
             $('#autoCloseModal').modal('show');
             const name = localStorage.getItem('userName');
