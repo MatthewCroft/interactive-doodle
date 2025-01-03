@@ -1,7 +1,6 @@
 # Interactive Doodle
 
-A real-time doodle application using WebSockets and STOMP for communication
-
+A real-time doodle application showing users drawing lines on canvas using WebSockets and STOMP for communication
 ### Demo
 ![Demo](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHY3eHpvY3N1ZjZlbmRya3N5amJ6NDczbWp3d3JmanFqeThrbmRhMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JJZTFFpVxgQLnJ5gHJ/giphy.gif)
 
