@@ -6,6 +6,10 @@ A real-time doodle application using WebSockets and STOMP for communication
 ![Demo](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHY3eHpvY3N1ZjZlbmRya3N5amJ6NDczbWp3d3JmanFqeThrbmRhMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JJZTFFpVxgQLnJ5gHJ/giphy.gif)
 
 This demo was created using k6 javascript load testing tool to simulate multiple users interacting with the canvas
+
+## Live Server
+https://interactive-doodle-0-0-1-04e68f6a726a.herokuapp.com/
+
 ## Features
 1. Real time communication of users lines being drawn on canvas
 2. Real time chat messages between users
