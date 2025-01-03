@@ -1,14 +1,17 @@
 let stompClient = null; // Make sure this is outside the function if it's global
 
 async function getStompClient() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if (stompClient) {
             resolve(stompClient);
             return;
         }
 
+        const response = await fetch("/config/stomp");
+        const config = await response.json();
+
         stompClient = new StompJs.Client({
-            brokerURL: 'ws://localhost:8080/game-websocket',
+            brokerURL: config.brokerUrl,
             onConnect: (frame) => {
                 console.log('Connected: ' + frame);
 
