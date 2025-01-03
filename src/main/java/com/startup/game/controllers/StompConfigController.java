@@ -11,6 +11,7 @@ public class StompConfigController {
     @GetMapping("/config/stomp")
     public StompBrokerConfig getBrokerUrl(HttpServletRequest request) {
         String serverPort = request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : String.valueOf(request.getServerPort());
+        String ws = request.getServerName().contains("localhost") ? "ws" : "wss";
         String brokerUrl = String.format("ws://%s:%s/game-websocket", request.getServerName(), serverPort);
         return new StompBrokerConfig(brokerUrl);
     }
